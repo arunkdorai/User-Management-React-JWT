@@ -1,0 +1,218 @@
+.login-App {
+  max-width: 400px;
+  margin: 100px auto;
+  padding: 2.5rem;
+  background: linear-gradient(145deg, #2d2d49, #4896c3);
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+h2 {
+  text-align: center;
+  color: #fff;
+  font-size: 2rem;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+h2::after {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: #00ff88;
+  margin: 10px auto 0;
+  border-radius: 2px;
+}
+
+.input-field {
+  margin-bottom: 1.8rem;
+  position: relative;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(5px);
+}
+
+input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+input:focus {
+  outline: none;
+  border-color: #00ff88;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+}
+
+.button-login {
+  width: 100%;
+  padding: 1rem;
+  background: #00ff88;
+  color: #2a2a72;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.button-login:hover {
+  background: #00cc6a;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 255, 136, 0.4);
+}
+
+.button-login:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(0, 255, 136, 0.2);
+}
+
+.button-login::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  border-radius: 100%;
+  transform: scale(1, 1) translate(-50%);
+  transform-origin: 50% 50%;
+}
+
+.button-login:focus:not(:active)::after {
+  animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+  0% {
+    transform: scale(0, 0);
+    opacity: 0.5;
+  }
+  20% {
+    transform: scale(25, 25);
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(40, 40);
+  }
+}
+
+/* Add error state styling */
+input.error {
+  border-color: #857e80;
+  box-shadow: 0 0 10px rgba(255, 56, 96, 0.3);
+}
+
+/* .error-message {
+  color: #060505;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+} */
+
+/* Add remember me checkbox styling */
+.remember-me {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.remember-me input[type="checkbox"] {
+  width: auto;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.remember-me label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+/* Add forgot password link */
+.forgot-password {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.forgot-password a {
+  color: rgba(255, 255, 255, 0.7);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.3s ease;
+}
+
+.forgot-password a:hover {
+  color: #00ff88;
+  text-decoration: underline;
+}
+
+
+/* Add these to your existing Login.css file in the admin folder */
+
+.error-message {
+  color: #ff3860; /* Bright pinkish-red */
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  background-color: rgba(255, 255, 255, 0.1); /* Optional: slight background to enhance visibility */
+  padding: 5px 8px; /* Optional: add some padding */
+  border-radius: 4px; /* Optional: rounded corners */
+}
+
+.input-error {
+  border: 2px solid #ff3860 !important; /* Thicker border */
+  background-color: rgba(255, 56, 96, 0.1); /* Slight red tint */
+}
+
+/* You may need to adjust these depending on your existing styles */
+/* .input-field {
+  margin-bottom: 20px;
+  position: relative;
+} */
+
+.button-login:disabled {
+  background-color: #95a5a6;
+  cursor: not-allowed;
+}
+
+.server-error-message {
+  color: #ff3860;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}

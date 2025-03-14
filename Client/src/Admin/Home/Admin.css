@@ -1,0 +1,364 @@
+/* Base styling */
+body {
+  background-color: #fff5e6; /* Softer than bisque */
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Search input styling */
+.search {
+  width: 350px;
+  padding: 12px 15px;
+  font-size: 16px;
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  background-color: white;
+  color: #9f9fc2;
+}
+
+.search:focus {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  outline: none;
+  width: 380px;
+}
+
+.search::placeholder {
+  color: #9393cc;
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+/* Header and navigation */
+.logout-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 15px 30px;
+}
+
+.logout-btn {
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 500;
+  background-color: #ff6b6b;
+  color: white;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+/* Card layout */
+.card-row {
+  margin: 30px 0;
+  padding: 15px 30px 10px;
+}
+
+.card-column {
+  margin-bottom: 30px;
+  transition: all 0.3s ease;
+}
+
+/* User card styling */
+.user-card {
+  text-align: center;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  background-color: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.user-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.12);
+}
+
+.card-image {
+  height: 250px;
+  object-fit: cover;
+  transition: all 0.5s ease;
+}
+
+.user-card:hover .card-image {
+  transform: scale(1.05);
+}
+
+.card-body {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.card-text {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 15px;
+}
+
+/* Button styling */
+.button-group {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.button-group .btn {
+  font-size: 13px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-edit {
+  background-color: #4dabf7;
+  color: white;
+}
+
+.btn-edit:hover {
+  background-color: #3793db;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(77, 171, 247, 0.3);
+}
+
+.btn-delete {
+  background-color: #ff6b6b;
+  color: white;
+}
+
+.btn-delete:hover {
+  background-color: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.custom-margin-right {
+  margin-right: 5px;
+}
+
+/* Modal styling */
+.modal-content {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+  border: none;
+  overflow: hidden;
+}
+
+.modal-header {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 20px 25px;
+  background-color: #f8f9fa;
+}
+
+.modal-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.modal-body {
+  padding: 25px;
+}
+
+.modal-footer {
+  border-top: 1px solid #f0f0f0;
+  padding: 20px 25px;
+  background-color: #f8f9fa;
+}
+
+/* Form controls */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
+  display: block;
+}
+
+.form-control {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 12px 15px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  background-color: #f9f9f9;
+}
+
+.form-control:focus {
+  border-color: #4dabf7;
+  background-color: white;
+  box-shadow: 0 0 0 3px rgba(77, 171, 247, 0.2);
+}
+
+#formImage + img {
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  margin-top: 10px;
+  object-fit: cover;
+  max-width: 100%;
+  transition: all 0.3s ease;
+}
+
+/* Button styles */
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+button.btn-secondary {
+  background-color: #adb5bd;
+  color: white;
+}
+
+button.btn-secondary:hover {
+  background-color: #919aa1;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(173, 181, 189, 0.3);
+}
+
+button.btn-primary {
+  background-color: #4dabf7;
+  color: white;
+}
+
+button.btn-primary:hover {
+  background-color: #3793db;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(77, 171, 247, 0.3);
+}
+
+/* Add user button */
+.add-user-button {
+  margin-left: 15px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  background-color: #20c997;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  box-shadow: 0 5px 15px rgba(32, 201, 151, 0.2);
+  transition: all 0.3s ease;
+}
+
+.add-user-button:hover {
+  background-color: #0ca678;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(32, 201, 151, 0.3);
+}
+
+.add-user-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(32, 201, 151, 0.3);
+}
+
+/* Header section */
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  margin: 20px 30px 0;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .search {
+    width: 250px;
+  }
+  
+  .search:focus {
+    width: 270px;
+  }
+  
+  .header-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .card-column {
+    margin-bottom: 20px;
+  }
+}
+
+/* Animation for card loading */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-column {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+.card-column:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+.card-column:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.card-column:nth-child(4) {
+  animation-delay: 0.3s;
+}
+
+.disabled-input {
+  background-color: #f0f0f0;
+  color: #666;
+  cursor: not-allowed;
+  border: 1px solid #ccc;
+  opacity: 0.8;
+}
+
+.text-muted {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
