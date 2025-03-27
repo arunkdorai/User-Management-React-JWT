@@ -191,7 +191,7 @@ function Login() {
                 fontSize: '0.8rem', 
                 marginTop: '5px', 
                 display: 'block',
-                backgroundColor: 'rgba(255,0,0,0.1)',
+                backgroundColor: 'rgb(255, 255, 255)',
                 padding: '5px',
                 borderRadius: '4px'
               }}
@@ -219,7 +219,7 @@ function Login() {
                 fontSize: '0.8rem', 
                 marginTop: '5px', 
                 display: 'block',
-                backgroundColor: 'rgba(255,0,0,0.1)',
+                backgroundColor: 'rgb(255, 255, 255)',
                 padding: '5px',
                 borderRadius: '4px'
               }}

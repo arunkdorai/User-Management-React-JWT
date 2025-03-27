@@ -6,6 +6,13 @@ import { addallusers, searchUser } from "../../Store/Adminaction";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 
+// Validation Regex
+const VALIDATION = {
+  username: /^[A-Za-z ]{3,30}$/,
+  email: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+  password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*]{8,}$/,
+};
+
 function Admhome() {
   // Local state to manage users directly
   const [localUsers, setLocalUsers] = useState([]);
@@ -137,98 +144,139 @@ function Admhome() {
 
   const handleUserEdit = async (e) => {
     e.preventDefault();
-
-    const nameregex = /^[A-Za-z ]+$/;
-
-    if (!nameregex.test(username)) {
-      toast.info("Please enter a valid username", {
+    console.log("Edit initiated for User ID:", currentEditUser);
+  
+    if (!username.trim()) {
+      console.log("Username validation failed: empty username.");
+      toast.error("Username cannot be empty", {
         position: "top-center",
         autoClose: 2000,
       });
       return;
     }
-
+  
     try {
-      let imageUrl = currentImage; // Default to current image
-
-      // Only upload if the image has changed (is a File object)
+      let imageUrl = currentImage;
+      console.log("Current Image:", currentImage);
+  
       if (image instanceof File) {
-        imageUrl = await uploadimage(image);
-        if (!imageUrl) {
-          toast.error("Failed to upload image", {
-            position: "top-center",
-            autoClose: 2000,
-          });
-          return;
-        }
+        console.log("Uploading new image...");
+        const formData = new FormData();
+        formData.append("file", image);
+        formData.append("upload_preset", "usermanagement");
+        formData.append("cloud_name", "dehzhdpab");
+  
+        const cloudinaryResponse = await axios.post(
+          "https://api.cloudinary.com/v1_1/dehzhdpab/image/upload",
+          formData
+        );
+  
+        imageUrl = cloudinaryResponse.data.secure_url;
+        console.log("New Image URL:", imageUrl);
       }
-
-      const editUserdata = {
+  
+      const editUserData = {
         username,
-        email, // Use the email from state (which should be readonly)
         image: imageUrl,
       };
-
+  
+      console.log("Sending edit request with data:", editUserData);
+  
       const response = await axios.patch(
         `http://localhost:4000/admin/edituser/${currentEditUser}`,
-        editUserdata,
-        {
-          withCredentials: true,
-        }
+        editUserData,
+        { withCredentials: true }
       );
-
-      if (response.status === 201) {
-        const updatedUser = response.data.edituser;
-
-        // Update local state directly
-        setLocalUsers((prev) =>
-          prev.map((user) =>
-            user._id === updatedUser._id ? updatedUser : user
-          )
-        );
-
-        toast.success("Successfully updated user", {
-          position: "top-center",
-          autoClose: 1500,
+  
+      console.log("Edit response:", response);
+  
+      if (response.status === 200 || response.status === 201) { // Fix: Accept both 200 and 201
+        console.log("User updated successfully on the server.");
+  
+        setLocalUsers((prevUsers) => {
+          const updatedUsers = prevUsers.map((user) =>
+            user._id === currentEditUser ? { ...user, username, image: imageUrl } : user
+          );
+          console.log("Updated users after edit:", updatedUsers);
+          return updatedUsers;
         });
-
-        setShowModal(false);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message || "An error occurred", {
-        position: "top-center",
-        autoClose: 2000,
-      });
-    }
-  };
-
-  const handleDelete = async (userid) => {
-    try {
-      const response = await axios.delete(
-        `http://localhost:4000/admin/deleteuser/${userid}`,
-        {
-          withCredentials: true,
-        }
-      );
-
-      if (response.status === 201) {
-        // Update local state directly
-        setLocalUsers((prev) => prev.filter((user) => user._id !== userid));
-
-        toast.success(response.data.message || "User deleted successfully", {
+  
+        setFilteredUsers((prevUsers) => {
+          const updatedUsers = prevUsers.map((user) =>
+            user._id === currentEditUser ? { ...user, username, image: imageUrl } : user
+          );
+          return updatedUsers;
+        });
+  
+        toast.success("User updated successfully", {
           position: "top-center",
           autoClose: 2000,
         });
+  
+        setShowModal(false);
+        console.log("Modal closed.");
+      } else {
+        console.log("Unexpected edit response status:", response.status);
       }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message || "An error occurred", {
+      console.error("Edit Error:", error);
+      toast.error(error.response?.data?.message || "Failed to update user", {
         position: "top-center",
         autoClose: 2000,
       });
     }
   };
+  
+  
+
+  const handleDelete = async (userid) => {
+    console.log("Delete initiated for User ID:", userid);
+  
+    try {
+      const isConfirmed = window.confirm("Are you sure you want to delete this user?");
+      if (!isConfirmed) {
+        console.log("User deletion cancelled.");
+        return;
+      }
+  
+      const response = await axios.delete(
+        `http://localhost:4000/admin/deleteuser/${userid}`,
+        { withCredentials: true }
+      );
+  
+      console.log("Delete response:", response);
+  
+      if (response.status === 200 || response.status === 201) { // Fix: Accept both 200 and 201
+        console.log("User deleted successfully on the server.");
+  
+        setLocalUsers((prevUsers) => {
+          const updatedUsers = prevUsers.filter((user) => user._id !== userid);
+          console.log("Updated user list after deletion:", updatedUsers);
+          return updatedUsers;
+        });
+  
+        setFilteredUsers((prevUsers) => {
+          const updatedUsers = prevUsers.filter((user) => user._id !== userid);
+          return updatedUsers;
+        });
+  
+        toast.success("User deleted successfully", {
+          position: "top-center",
+          autoClose: 2000,
+        });
+      } else {
+        console.log("Unexpected delete response status:", response.status);
+      }
+    } catch (error) {
+      console.error("Delete Error:", error);
+      toast.error("Failed to delete user", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    }
+  };
+  
+  
 
   const closeadduser = () => {
     setaddmodal(false);
@@ -242,6 +290,7 @@ function Admhome() {
   const handleAdduser = async (e) => {
     e.preventDefault();
 
+    // Comprehensive validation
     if (!username || !email || !password || !newimage) {
       toast.error("Please fill all the fields", {
         position: "top-center",
@@ -250,16 +299,25 @@ function Admhome() {
       return;
     }
 
-    const nameregex = /^[A-Za-z ]+$/;
-    const emailregex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const passwordregex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*]{8,}$/;
+    // Validate using regex
+    if (!VALIDATION.username.test(username)) {
+      toast.error("Username must be 3-30 letters only", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+      return;
+    }
 
-    if (
-      !nameregex.test(username) ||
-      !emailregex.test(email) ||
-      !passwordregex.test(password)
-    ) {
-      toast.error("Validation failed. Please enter valid details.", {
+    if (!VALIDATION.email.test(email)) {
+      toast.error("Invalid email format", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+      return;
+    }
+
+    if (!VALIDATION.password.test(password)) {
+      toast.error("Password must be 8+ chars, include letters and numbers", {
         position: "top-center",
         autoClose: 2000,
       });
@@ -298,6 +356,7 @@ function Admhome() {
 
         // Update local state directly
         setLocalUsers((prev) => [...prev, newUser]);
+        setFilteredUsers((prev) => [...prev, newUser]);
 
         toast.success("User added successfully", {
           position: "top-center",
