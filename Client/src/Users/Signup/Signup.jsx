@@ -6,19 +6,22 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+  });
+  
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   
   // State for validation errors
   const [errors, setErrors] = useState({
-    username: '',
-    email: '',
-    password: '',
-    image: '',
-    server: ''
+    username: null,
+    email: null,
+    password: null,
+    image: null,
+    server: null
   });
   
   const navigate = useNavigate();
@@ -27,7 +30,25 @@ const SignUp = () => {
     const file = e.target.files[0];
     if (file) {
       setImage(file);
-      setErrors(prev => ({ ...prev, image: '' }));
+      setErrors(prev => ({ ...prev, image: null }));
+    }
+  };
+
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    
+    // Update form data
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+
+    // Clear specific error when user starts typing
+    if (value.trim()) {
+      setErrors(prev => ({
+        ...prev,
+        [id]: null
+      }));
     }
   };
 
@@ -54,63 +75,64 @@ const SignUp = () => {
     }
   };
 
-  const validateInputs = () => {
-    let isValid = true;
+  const validateForm = () => {
     const newErrors = {
-      username: '',
-      email: '',
-      password: '',
-      image: '',
-      server: ''
+      username: null,
+      email: null,
+      password: null,
+      image: null,
+      server: null
     };
 
     // Validate username
     const nameregex = /^[A-Za-z ]+$/;
-    if (!username) {
+    if (!formData.username.trim()) {
       newErrors.username = 'Username is required';
-      isValid = false;
-    } else if (!nameregex.test(username)) {
+    } else if (!nameregex.test(formData.username)) {
       newErrors.username = 'Username should contain only letters and spaces';
-      isValid = false;
     }
 
     // Validate email
     const emailregex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!email) {
+    if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
-      isValid = false;
-    } else if (!emailregex.test(email)) {
+    } else if (!emailregex.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
-      isValid = false;
     }
 
     // Validate password
     const passwordregex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@#$%^&*]{8,}$/;
-    if (!password) {
+    if (!formData.password.trim()) {
       newErrors.password = 'Password is required';
-      isValid = false;
-    } else if (!passwordregex.test(password)) {
+    } else if (!passwordregex.test(formData.password)) {
       newErrors.password = 'Password must be at least 8 characters with at least one letter and one number';
-      isValid = false;
     }
 
     // Validate image
     if (!image) {
       newErrors.image = 'Profile image is required';
-      isValid = false;
     }
 
-    setErrors(newErrors);
-    return isValid;
+    return newErrors;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Clear server error
-    setErrors(prev => ({ ...prev, server: '' }));
+    // Validate form
+    const formErrors = validateForm();
     
-    if (!validateInputs()) {
+    // Set errors
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      ...formErrors
+    }));
+    
+    // Check if there are any errors
+    const hasErrors = Object.values(formErrors).some(error => error !== null);
+    
+    // If form is not valid, stop submission
+    if (hasErrors) {
       return;
     }
     
@@ -125,9 +147,9 @@ const SignUp = () => {
       }
       
       const userData = {
-        username,
-        email,
-        password,
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
         image: imageUrl
       };
       
@@ -145,34 +167,31 @@ const SignUp = () => {
           navigate('/login');
         }, 2000);
       } else {
-        // Handle successful response but with error message
-        setErrors(prev => ({ ...prev, server: response.data.message }));
-        toast.error(response.data.message || 'Signup failed. Please try again.', {
+        // Handle unsuccessful signup
+        const serverError = response.data.message || 'Signup failed. Please try again.';
+        
+        setErrors(prev => ({ 
+          ...prev, 
+          server: serverError 
+        }));
+        
+        toast.error(serverError, {
           position: "top-center",
           autoClose: 3000,
         });
       }
     } catch (error) {
-      // Handle error response
-      console.error('Signup failed:', error);
+      const errorMessage = error.response?.data?.message || 'Connection error. Please try again later.';
       
-      if (error.response && error.response.data) {
-        // Set server error message
-        setErrors(prev => ({ ...prev, server: error.response.data.message }));
-        
-        // Display specific error from the server
-        toast.error(error.response.data.message || 'Signup failed. Please try again.', {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      } else {
-        // Generic error message
-        setErrors(prev => ({ ...prev, server: 'Connection error. Please try again later.' }));
-        toast.error('Connection error. Please try again later.', {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      }
+      setErrors(prev => ({ 
+        ...prev, 
+        server: errorMessage 
+      }));
+      
+      toast.error(errorMessage, {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } finally {
       setLoading(false);
     }
@@ -185,7 +204,21 @@ const SignUp = () => {
         
         {/* Server error message */}
         {errors.server && (
-          <div className="server-error-message">{errors.server}</div>
+          <div 
+            className="server-error-message"
+            style={{
+              color: 'red', 
+              fontSize: '0.8rem', 
+              marginBottom: '15px', 
+              display: 'block',
+              backgroundColor: 'rgba(255,0,0,0.1)',
+              padding: '10px',
+              borderRadius: '4px',
+              textAlign: 'center'
+            }}
+          >
+            {errors.server}
+          </div>
         )}
         
         <div className="image-upload-container">
@@ -205,7 +238,22 @@ const SignUp = () => {
               </div>
             )}
           </label>
-          {errors.image && <div className="error-message">{errors.image}</div>}
+          {errors.image && (
+            <div 
+              className="error-message"
+              style={{
+                color: 'red', 
+                fontSize: '0.8rem', 
+                marginTop: '5px', 
+                display: 'block',
+                backgroundColor: 'rgba(255,0,0,0.1)',
+                padding: '5px',
+                borderRadius: '4px'
+              }}
+            >
+              {errors.image}
+            </div>
+          )}
         </div>
         
         <div className="form-group">
@@ -213,15 +261,27 @@ const SignUp = () => {
           <input
             type="text"
             id="username"
-            value={username}
-            onChange={(e) => {
-              setUsername(e.target.value);
-              if (e.target.value) setErrors(prev => ({ ...prev, username: '' }));
-            }}
+            value={formData.username}
+            onChange={handleChange}
             placeholder="Enter username"
             className={errors.username ? "input-error" : ""}
           />
-          {errors.username && <div className="error-message">{errors.username}</div>}
+          {errors.username && (
+            <div 
+              className="error-message"
+              style={{
+                color: 'red', 
+                fontSize: '0.8rem', 
+                marginTop: '5px', 
+                display: 'block',
+                backgroundColor: 'rgba(255,0,0,0.1)',
+                padding: '5px',
+                borderRadius: '4px'
+              }}
+            >
+              {errors.username}
+            </div>
+          )}
         </div>
 
         <div className="form-group">
@@ -229,15 +289,27 @@ const SignUp = () => {
           <input
             type="email"
             id="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (e.target.value) setErrors(prev => ({ ...prev, email: '' }));
-            }}
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Enter email"
             className={errors.email ? "input-error" : ""}
           />
-          {errors.email && <div className="error-message">{errors.email}</div>}
+          {errors.email && (
+            <div 
+              className="error-message"
+              style={{
+                color: 'red', 
+                fontSize: '0.8rem', 
+                marginTop: '5px', 
+                display: 'block',
+                backgroundColor: 'rgba(255,0,0,0.1)',
+                padding: '5px',
+                borderRadius: '4px'
+              }}
+            >
+              {errors.email}
+            </div>
+          )}
         </div>
 
         <div className="form-group">
@@ -245,16 +317,28 @@ const SignUp = () => {
           <input
             type="password"
             id="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (e.target.value) setErrors(prev => ({ ...prev, password: '' }));
-            }}
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Enter password"
             className={errors.password ? "input-error" : ""}
           />
-          {errors.password && <div className="error-message">{errors.password}</div>}
-          {password && !errors.password && (
+          {errors.password && (
+            <div 
+              className="error-message"
+              style={{
+                color: 'red', 
+                fontSize: '0.8rem', 
+                marginTop: '5px', 
+                display: 'block',
+                backgroundColor: 'rgba(255,0,0,0.1)',
+                padding: '5px',
+                borderRadius: '4px'
+              }}
+            >
+              {errors.password}
+            </div>
+          )}
+          {formData.password && !errors.password && (
             <div className="password-hint">
               Password must be at least 8 characters with at least one letter and one number
             </div>

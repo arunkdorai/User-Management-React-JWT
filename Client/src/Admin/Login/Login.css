@@ -184,14 +184,20 @@ input.error {
 
 /* Add these to your existing Login.css file in the admin folder */
 
-.error-message {
-  color: #ff3860; /* Bright pinkish-red */
+/* .error-message {
+  color: #ff3860; 
   font-size: 0.85rem;
   margin-top: 0.5rem;
   font-weight: 500;
-  background-color: rgba(255, 255, 255, 0.1); /* Optional: slight background to enhance visibility */
-  padding: 5px 8px; /* Optional: add some padding */
-  border-radius: 4px; /* Optional: rounded corners */
+  background-color: rgba(255, 255, 255, 0.1); 
+  padding: 5px 8px; 
+  border-radius: 4px; 
+} */
+
+.error-message {
+  color: red;
+  font-size: 0.8rem;
+  margin-top: 5px;
 }
 
 .input-error {
@@ -210,9 +216,17 @@ input.error {
   cursor: not-allowed;
 }
 
-.server-error-message {
+/* .server-error-message {
   color: #ff3860;
   font-size: 0.9rem;
   margin-bottom: 1rem;
   text-align: center;
+} */
+
+.server-error-message {
+  color: red;
+  background-color: #ffeeee;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
 }

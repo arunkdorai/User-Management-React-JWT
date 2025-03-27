@@ -6,66 +6,93 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({
+  const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    server: ''
+    password: ''
   });
   
+  const [errors, setErrors] = useState({
+    email: null,
+    password: null,
+    server: null
+  });
+  
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   
-  const validateInputs = () => {
-    let isValid = true;
+  // Comprehensive validation function
+  const validateForm = () => {
     const newErrors = {
-      email: '',
-      password: '',
-      server: ''
+      email: null,
+      password: null,
+      server: null
     };
 
-    // Validate email
-    const emailregex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    if (!email) {
+    // Email validation
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
-      isValid = false;
-    } else if (!emailregex.test(email)) {
+    } else if (!emailRegex.test(formData.email)) {
       newErrors.email = 'Please enter a valid email address';
-      isValid = false;
     }
 
-    // Validate password
-    if (!password) {
+    // Password validation
+    if (!formData.password.trim()) {
       newErrors.password = 'Password is required';
-      isValid = false;
     }
 
-    setErrors(newErrors);
-    return isValid;
+    return newErrors;
   };
 
+  // Handle input changes
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    
+    // Update form data
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+
+    // Clear specific error when user starts typing
+    if (value.trim()) {
+      setErrors(prev => ({
+        ...prev,
+        [id]: null
+      }));
+    }
+  };
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Clear server error
-    setErrors(prev => ({ ...prev, server: '' }));
+    // Validate form
+    const formErrors = validateForm();
     
-    if (!validateInputs()) {
+    // Set errors
+    setErrors(prevErrors => ({
+      ...prevErrors,
+      ...formErrors
+    }));
+    
+    // Check if there are any errors
+    const hasErrors = Object.values(formErrors).some(error => error !== null);
+    
+    // If form is not valid, stop submission
+    if (hasErrors) {
       return;
     }
     
     setLoading(true);
 
-    const userData = {
-      email,
-      password,
-    };
-    
     try {
       const response = await axios.post(
         "http://localhost:4000/login",
-        userData,
+        {
+          email: formData.email,
+          password: formData.password
+        },
         {
           withCredentials: true,
         }
@@ -81,33 +108,31 @@ function Login() {
           navigate("/");
         }, 2000);
       } else {
-        // Handle successful response but with error message
-        setErrors(prev => ({ ...prev, server: response.data.message }));
-        toast.error(response.data.message || "Login failed. Please try again.", {
+        // Handle unsuccessful login
+        const serverError = response.data.message || "Login failed. Please try again.";
+        
+        setErrors(prev => ({ 
+          ...prev, 
+          server: serverError 
+        }));
+        
+        toast.error(serverError, {
           position: "top-center",
           autoClose: 3000,
         });
       }
     } catch (error) {
-      console.error("Login error:", error);
+      const errorMessage = error.response?.data?.message || 'Connection error. Please try again later.';
       
-      if (error.response && error.response.data) {
-        // Set server error message
-        setErrors(prev => ({ ...prev, server: error.response.data.message }));
-        
-        // Display specific error from the server
-        toast.error(error.response.data.message || "Login failed. Please check your credentials and try again.", {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      } else {
-        // Generic error message
-        setErrors(prev => ({ ...prev, server: 'Connection error. Please try again later.' }));
-        toast.error('Connection error. Please try again later.', {
-          position: "top-center",
-          autoClose: 3000,
-        });
-      }
+      setErrors(prev => ({ 
+        ...prev, 
+        server: errorMessage 
+      }));
+      
+      toast.error(errorMessage, {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } finally {
       setLoading(false);
     }
@@ -120,7 +145,21 @@ function Login() {
         
         {/* Server error message */}
         {errors.server && (
-          <div className="server-error-message">{errors.server}</div>
+          <div 
+            className="server-error-message"
+            style={{
+              color: 'red', 
+              fontSize: '0.8rem', 
+              marginBottom: '15px', 
+              display: 'block',
+              backgroundColor: 'rgba(255,0,0,0.1)',
+              padding: '10px',
+              borderRadius: '4px',
+              textAlign: 'center'
+            }}
+          >
+            {errors.server}
+          </div>
         )}
         
         <div className="form-group">
@@ -128,15 +167,27 @@ function Login() {
           <input
             type="email"
             id="email"
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              if (e.target.value) setErrors(prev => ({ ...prev, email: '' }));
-            }}
+            value={formData.email}
+            onChange={handleChange}
             placeholder="Enter your email"
             className={errors.email ? "input-error" : ""}
           />
-          {errors.email && <div className="error-message">{errors.email}</div>}
+          {errors.email && (
+            <div 
+              className="error-message"
+              style={{
+                color: 'red', 
+                fontSize: '0.8rem', 
+                marginTop: '5px', 
+                display: 'block',
+                backgroundColor: 'rgba(255,0,0,0.1)',
+                padding: '5px',
+                borderRadius: '4px'
+              }}
+            >
+              {errors.email}
+            </div>
+          )}
         </div>
 
         <div className="form-group">
@@ -144,15 +195,27 @@ function Login() {
           <input
             type="password"
             id="password"
-            value={password}
-            onChange={(e) => {
-              setPassword(e.target.value);
-              if (e.target.value) setErrors(prev => ({ ...prev, password: '' }));
-            }}
+            value={formData.password}
+            onChange={handleChange}
             placeholder="Enter your password"
             className={errors.password ? "input-error" : ""}
           />
-          {errors.password && <div className="error-message">{errors.password}</div>}
+          {errors.password && (
+            <div 
+              className="error-message"
+              style={{
+                color: 'red', 
+                fontSize: '0.8rem', 
+                marginTop: '5px', 
+                display: 'block',
+                backgroundColor: 'rgba(255,0,0,0.1)',
+                padding: '5px',
+                borderRadius: '4px'
+              }}
+            >
+              {errors.password}
+            </div>
+          )}
         </div>
 
         <button 
